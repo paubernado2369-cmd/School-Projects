@@ -9,8 +9,8 @@ import random
 import time
 
 
-NOMS_ALEATOIRS = ["BEVU", "CHINOIS"]
-PRENOMS_ALEATOIRS = ["YFLYF", "JHGGLYGLYG"]
+NOMS_ALEATOIRS = ["Bevu", "Chinois","Cavu","BOB"]
+PRENOMS_ALEATOIRS = ["YFLYF", "JHYGLALA","MATURUS","LOPEZ"]
 
 mon_equipe = []
 
@@ -33,7 +33,9 @@ def creer_joueur():
         "stats": {
             "def": valeur_gaussienne(),
             "att": valeur_gaussienne(),
-            "endurance": valeur_gaussienne()
+            "endurance": valeur_gaussienne(),
+            "dexterité":valeur_gaussienne(),
+            "intelligence":valeur_gaussienne()
         }
     }
      
@@ -41,19 +43,43 @@ def creer_joueur():
     
 
 ## CREER UNE EQUIPE 
-def creer_equipe():
+def creer_equipe(nom_equipe):
+
+    nom_equipe = []
+
     for _ in range(15):
-        mon_equipe.append(creer_joueur())
+        nom_equipe.append(creer_joueur())
 
     return mon_equipe
 
 
 # def mon_equipe
 
+# tactiquuuueuueueueueuee
+def tactique():
+    
+    print("")
+    present_tactique = True
+    while present_tactique :
+        print("CHOISISSEZ VOTRE TACTIQUE: \n ")
+        print("4-2-3-1 ?")
+        print("4-4-2 ?")
+        print("3-5-2 ?")
+        print("4-3-3 ?")
+        print("5-3-2 ?")
+        print("4-2-4 ?")
+        print("5-4-1 ?")
+        print("3-4-3 ?")
+        print("")
+        action = int(input("ALORS COACH ? => "))
+        
+
+
+        
+
 
 
 def main():
-
 
 
     prep_av_match = True
@@ -67,10 +93,15 @@ def main():
         print(" ")
         print("1/ TACTIQUE")
         print("2/ COMPOSITION EQUIPE")
-        action = input(" QU'EST CE QUE TU VEUX FAIRE, COACH ?  =>  ")  ####### !! A FAIRE, BOUCLE WHILE POUR ETRE SUR QUE L ACTION EST BONNE 
+        action = int(input(" QU'EST CE QUE TU VEUX FAIRE, COACH ?  =>  "))  ####### !! A FAIRE, BOUCLE WHILE POUR ETRE SUR QUE L ACTION EST BONNE 
 
         if action = 1:
+            print("allons allons")
+            
+
             pass
+        
+
 
 
 
