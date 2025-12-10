@@ -343,3 +343,148 @@ if __name__ == "__main__":
     match = creer_match(equipe1, equipe2)
     rapport = simuler_match_complet(match, duree=90)
     print(rapport)
+
+
+
+
+"""
+import random
+import time
+
+# ==================== DONNÉES ====================
+
+equipe_une = [
+    {'nom': 'BERNADO', 'prenom': 'PAU', 'poste': 'Milieu', 'stats': {'def': 56, 'att': 54, 'endurance': 49, 'passe': 55}},
+    {'nom': 'CHINOIS', 'prenom': 'YFLYF', 'poste': 'Attaquant', 'stats': {'def': 60, 'att': 53, 'endurance': 60, 'passe': 50}},
+    {'nom': 'BEVU', 'prenom': 'YFLYF', 'poste': 'Gardien', 'stats': {'def': 46, 'att': 47, 'endurance': 63, 'passe': 40}},
+]
+
+equipe_deux = [
+    {'nom': 'Sainox', 'prenom': 'Saina', 'poste': 'Milieu', 'stats': {'def': 56, 'att': 54, 'endurance': 49, 'passe': 55}},
+    {'nom': 'CHINOIS', 'prenom': 'Andrew', 'poste': 'Attaquant', 'stats': {'def': 60, 'att': 53, 'endurance': 60, 'passe': 50}},
+    {'nom': 'Cavu', 'prenom': 'Favé', 'poste': 'Gardien', 'stats': {'def': 46, 'att': 47, 'endurance': 63, 'passe': 40}},
+]
+
+resultat = [0, 0]  # score [équipe 1, équipe 2]
+
+# ==================== ACTIONS ====================
+
+def tenter_passe(passeur, receveur, distance):
+    """Simule une passe"""
+    qualite_passe = passeur['stats']['passe'] + random.randint(-15, 15)
+    reussite = qualite_passe > 50
+    nouvelle_distance = distance + random.randint(-5, 40)
+    
+    if reussite:
+        return True, nouvelle_distance, f"{passeur['prenom']} réussit une passe vers {receveur['prenom']} (distance: {nouvelle_distance}m)"
+    else:
+        return False, 100, f"{passeur['prenom']} rate sa passe !"
+
+
+def tenter_tir(tireur, distance, equipe_index):
+    """Simule un tir"""
+    qualite_tir = tireur['stats']['att'] + random.randint(-2 * distance, 15)
+    reussite = qualite_tir > 50
+    
+    if reussite:
+        resultat[equipe_index] += 1
+        return True, 100, f"⚽ BUT ! {tireur['prenom']} tire et marque !"
+    else:
+        return False, 100, f"{tireur['prenom']} tire mais rate..."
+
+def simule_action(joueur_b, distance, equipe_actuelle, equipe_index):
+    """Choisit une action en fonction de la distance"""
+    avoir_ballon = True
+    actions_effectuees = []
+    max_passes = 5  # Limite le nombre de passes pour éviter une boucle infinie
+    nombre_passes = 0
+
+    while avoir_ballon and nombre_passes < max_passes:
+        if distance > 30:  
+            action = random.choices(["passe", "tir"], weights=[90, 10])[0]
+        elif distance > 15:
+            action = random.choices(["passe", "tir"], weights=[60, 40])[0]
+        else:
+            action = random.choices(["passe", "tir"], weights=[30, 70])[0]
+
+        if action == "passe":
+            receveur = random.choice(equipe_actuelle)
+            reussite, nouvelle_distance, message = tenter_passe(joueur_b, receveur, distance)
+            actions_effectuees.append(message)
+            
+            if reussite:
+                distance = nouvelle_distance
+                joueur_b = receveur  # Le receveur a maintenant le ballon
+                nombre_passes += 1
+            else:
+                avoir_ballon = False
+                
+        else:  # tir
+            reussite, nouvelle_distance, message = tenter_tir(joueur_b, distance, equipe_index)
+            actions_effectuees.append(message)
+            avoir_ballon = False  # Après un tir, on perd toujours le ballon
+
+    return avoir_ballon, actions_effectuees
+
+
+# ====================== MATCH ====================
+
+def match():
+    """Simule un match de 90 minutes"""
+    equipe_actuelle = equipe_une
+    equipe_index = 0  # 0 = équipe 1, 1 = équipe 2
+    
+    print("=" * 60)
+    print("🏆 DÉBUT DU MATCH 🏆")
+    print("=" * 60)
+    print()
+    
+    for minute in range(1, 91):
+        joueur = random.choice(equipe_actuelle)
+        distance_initiale = random.randint(30, 80)  # Distance au but
+        
+        garde_ballon, actions = simule_action(joueur, distance_initiale, equipe_actuelle, equipe_index)
+        
+        # Affichage des actions importantes (environ 1 action sur 10)
+        if random.random() < 0.15 or resultat[0] + resultat[1] > 0:  # Affiche plus souvent s'il y a des buts
+            print(f"⏱️  Minute {minute} {'─' * 40}")
+            for action in actions:
+                print(f"   {action}")
+        
+        # Si l'action échoue, la possession change
+        if not garde_ballon:
+            if equipe_actuelle == equipe_une:
+                equipe_actuelle = equipe_deux
+                equipe_index = 1
+                if random.random() < 0.05:  # Affiche parfois le changement
+                    print("   🔄 L'équipe 2 récupère le ballon !")
+            else:
+                equipe_actuelle = equipe_une
+                equipe_index = 0
+                if random.random() < 0.05:
+                    print("   🔄 L'équipe 1 récupère le ballon !")
+        
+        # Affiche le score à certains moments clés
+        if minute in [15, 30, 45, 60, 75, 90]:
+            print(f"\n📊 Score à la {minute}ème minute : Équipe 1 [{resultat[0]}] - [{resultat[1]}] Équipe 2")
+            print()
+    
+    print("\n" + "=" * 60)
+    print("🏁 FIN DU MATCH 🏁")
+    print("=" * 60)
+    print(f"SCORE FINAL : Équipe 1 [{resultat[0]}] - [{resultat[1]}] Équipe 2")
+    print("=" * 60)
+    
+    # Annonce le vainqueur
+    if resultat[0] > resultat[1]:
+        print("🏆 VICTOIRE DE L'ÉQUIPE 1 ! 🏆")
+    elif resultat[1] > resultat[0]:
+        print("🏆 VICTOIRE DE L'ÉQUIPE 2 ! 🏆")
+    else:
+        print("🤝 MATCH NUL ! 🤝")
+
+# Lancer la simulation
+match()
+
+
+"""
